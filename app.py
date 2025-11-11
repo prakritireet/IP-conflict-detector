@@ -16,6 +16,7 @@ def scan_network(network):
         devices.append({'ip': received.psrc, 'mac': received.hwsrc})
     return devices
 
+
 def detect_conflicts(devices):
     """Check for IP or MAC address conflicts."""
     ip_to_mac = defaultdict(list)
@@ -35,17 +36,22 @@ def detect_conflicts(devices):
 
     return conflicts
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         network = request.form.get('network')
         if not network:
             return render_template('index.html', error="Please enter a valid IP or subnet.")
+
         devices = scan_network(network)
         conflicts = detect_conflicts(devices)
+
         return render_template('index.html', devices=devices, conflicts=conflicts, network=network)
+    
     return render_template('index.html')
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=10000)
+

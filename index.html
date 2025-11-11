@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Address Conflict Detector</title>
+  <style>
+    /* ---------- Dark Animated Background ---------- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #e6eef7;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(-45deg, #0b0f1a, #111827, #18222f, #1f2d3d);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ---------- Glass Container ---------- */
+    .container {
+      background: rgba(20, 28, 43, 0.85);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      padding: 50px 40px;
+      border-radius: 20px;
+      width: 60%;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(0, 255, 255, 0.05);
+    }
+
+    h1 {
+      font-size: 2.2em;
+      text-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+      color: #00ccff;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #b8c7da;
+      margin-bottom: 25px;
+    }
+
+    /* ---------- Input & Buttons ---------- */
+    input[type="text"] {
+      width: 70%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      margin-bottom: 15px;
+      text-align: center;
+      transition: 0.3s;
+      box-shadow: inset 0 0 8px rgba(0, 200, 255, 0.15);
+    }
+
+    input[type="text"]::placeholder {
+      color: #888;
+    }
+
+    input[type="text"]:focus {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
+    }
+
+    button {
+      padding: 10px 22px;
+      background: linear-gradient(90deg, #0088ff, #00bcd4);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(0, 200, 255, 0.8);
+    }
+
+    /* ---------- Output Box ---------- */
+    .output-box {
+      margin-top: 30px;
+      text-align: left;
+      background: rgba(10, 15, 25, 0.7);
+      padding: 25px;
+      border-radius: 12px;
+      min-height: 130px;
+      overflow-y: auto;
+      font-family: Consolas, monospace;
+      white-space: pre-line;
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      box-shadow: inset 0 0 20px rgba(0, 200, 255, 0.1);
+      color: #e0e8f0;
+    }
+
+    .output-box h3 {
+      color: #00bfff;
+      margin-top: 0;
+    }
+
+    /* ---------- Modal ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background: rgba(15, 23, 36, 0.97);
+      margin: 10% auto;
+      padding: 25px;
+      border: 2px solid #00aaff;
+      width: 60%;
+      border-radius: 12px;
+      text-align: left;
+      color: #d6e1f5;
+      box-shadow: 0 0 35px rgba(0, 200, 255, 0.4);
+    }
+
+    .close {
+      color: #ff6666;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ccff;
+      text-shadow: 0 0 10px #00aaff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌐 IP Address Conflict Detector</h1>
+    <p>Detect duplicate IPs on your network with ease and reliability.</p>
+
+    <!-- Input Form -->
+    <form method="POST">
+      <input type="text" name="network" placeholder="Enter IP or subnet (e.g. 192.168.1.0/24)" required>
+      <br>
+      <button type="submit">Scan Network</button>
+      <button type="button" id="aboutBtn">About App</button>
+    </form>
+
+    <!-- Output Box -->
+    {% if network %}
+      <div class="output-box">
+        <h3>Scan Results for {{ network }}</h3>
+        {% if devices %}
+          {% for d in devices %}
+            IP: {{ d.ip }} — MAC: {{ d.mac }}<br>
+          {% endfor %}
+        {% else %}
+          <span style="color:#00ff99;">✅ No duplicate or conflict detected!</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- About Modal -->
+  <div id="aboutModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>About IP Address Conflict Detector</h2>
+      <p>
+        The <strong>IP Address Conflict Detector</strong> helps network administrators
+        identify duplicate IP addresses within a subnet or LAN.
+      </p>
+      <p>
+        It uses <strong>ARP (Address Resolution Protocol)</strong> to discover IP–MAC address mappings
+        and alert users when the same IP is assigned to multiple devices.
+      </p>
+      <p>
+        Built with <strong>Python (Flask + Scapy)</strong>, this tool ensures smooth monitoring
+        and reliable network performance in an easy-to-use web interface.
+      </p>
+      <p style="text-align: center;">The IP Address Conflict Detector is a lightweight and efficient web tool designed to help users monitor their network for duplicate or conflicting IP addresses. It scans connected devices, detects overlapping IP assignments, and immediately alerts administrators when a conflict is found. By preventing IP duplication, this tool ensures smoother network performance, minimizes downtime, and enhances overall reliability in both home and enterprise networks.</p>
+    </div>
+  </div>
+
+  <script>
+    // Modal Functionality
+    const modal = document.getElementById("aboutModal");
+    const btn = document.getElementById("aboutBtn");
+    const span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

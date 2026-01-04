@@ -5,7 +5,6 @@ from collections import defaultdict
 app = Flask(__name__)
 
 def scan_network(network):
-    """Scan the given network and return IP-MAC mappings."""
     arp = ARP(pdst=network)
     ether = Ether(dst="ff:ff:ff:ff:ff:ff")
     packet = ether / arp
@@ -18,7 +17,6 @@ def scan_network(network):
 
 
 def detect_conflicts(devices):
-    """Check for IP or MAC address conflicts."""
     ip_to_mac = defaultdict(list)
     mac_to_ip = defaultdict(list)
 
@@ -55,6 +53,7 @@ def index():
 if __name__ == "__main__":
     print("Starting Flask app...")
     app.run(host="0.0.0.0", port=10000, debug=True)
+
 
 
 
